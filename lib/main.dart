@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:collection';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_app_links/flutter_facebook_app_links.dart';
 
-void main() => runApp(MyApp());
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
+
 
 class MyApp extends StatefulWidget {
   @override
@@ -15,14 +23,30 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   String _deepLink = 'Unknown';
+  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalyticsObserver observer =
+  FirebaseAnalyticsObserver(analytics: analytics);
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
     getDeepLink();
+    //setUserProperty();
   }
 
+  Future<void> setUserProperty(deepLink) async {
+    await analytics.setUserProperty(name: 'deep_link', value: deepLink);
+    await analytics.setUserProperty(name: 'test', value: "test4");
+
+    var uri = Uri.parse(deepLink);
+
+    uri.queryParameters.forEach((k, v) {
+      analytics.setUserProperty(name: k, value: v);
+    });
+
+    analytics.logAddPaymentInfo();
+  }
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     String platformVersion;
@@ -60,6 +84,7 @@ class _MyAppState extends State<MyApp> {
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
+    setUserProperty(deepLink);
     if (!mounted) return;
 
     setState(() {
