@@ -47,6 +47,61 @@ class _MyAppState extends State<MyApp> {
 
     analytics.logAddPaymentInfo();
   }
+
+  Future<void> purchase() async {
+    await analytics.logEvent(
+      name: 'purchase',
+      parameters: <String, dynamic>{
+        'currency': 'USD',
+        'value': 42,
+        'items': [
+            {
+              "item_id": "SKU_123456",
+              "item_name": "Stan and Friends Tee2",
+              "affiliation": "Google Store",
+              "coupon": "SUMMER_FUN",
+              "currency": "USD",
+              "discount": 2.22,
+              "index": 5,
+              "item_brand": "Google",
+              "item_category": "Apparel",
+              "item_category2": "Adult",
+              "item_category3": "Shirts",
+              "item_category4": "Crew",
+              "item_category5": "Short sleeve",
+              "item_list_id": "related_products",
+              "item_list_name": "Related Products",
+              "item_variant": "green",
+              "location_id": "L_12345",
+              "price": 9.99,
+              "quantity": 2
+            },
+            {
+              "item_id": "SKU_12345",
+              "item_name": "Stan and Friends Tee",
+              "affiliation": "Google Store",
+              "coupon": "SUMMER_FUN",
+              "currency": "USD",
+              "discount": 2.22,
+              "index": 7,
+              "item_brand": "Google",
+              "item_category": "Apparel",
+              "item_category2": "Adult",
+              "item_category3": "Shirts",
+              "item_category4": "Crew",
+              "item_category5": "Short sleeve",
+              "item_list_id": "related_products",
+              "item_list_name": "Related Products",
+              "item_variant": "black",
+              "location_id": "L_12345",
+              "price": 9.99,
+              "quantity": 1
+            }
+        ]
+      },
+    );
+  }
+
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     String platformVersion;
@@ -104,6 +159,10 @@ class _MyAppState extends State<MyApp> {
             children: [
               Text('Running on: $_platformVersion\n'),
               Text('deep link: $_deepLink\n'),
+              MaterialButton(
+                onPressed: purchase,
+                child: const Text('Test Purchase'),
+              ),
             ]
           )
         ),
